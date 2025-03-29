@@ -1,0 +1,32 @@
+﻿<Window x:Class="MachekhinZodiak.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:MachekhinZodiak"
+        mc:Ignorable="d"
+        Title="Zodiak Calculator" Height="200" Width="300">
+    <Grid>
+        <StackPanel Orientation="Vertical">
+            <TextBlock Text="Enter your birthday date:" FontWeight="Bold"/>
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                <DatePicker Width="150" Height="30" SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <Button Width="55" Height="30" Content="Calculate" Click="ConfirmDateButtonClick"/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                <TextBlock Text="Your age:" FontWeight="Bold" Margin="0,0,4,0"/>
+                <TextBlock x:Name="AgeTextBlock" Text="" Margin="0,0,20,0"/>
+                <TextBlock x:Name="CongratTextBlock" Text=""/>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                <TextBlock FontWeight="Bold" Text="Your Zodiak sign is:" Margin="0,0,4,0"/>
+                <TextBlock x:Name="ZodiakSignTextBlock" Text="" />
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                <TextBlock FontWeight="Bold" Text="Your Chineese Zodiak sign is:" Margin="0,0,4,0"/>
+                <TextBlock x:Name="ChineeseZodiakSignTextBlock" Text="" />
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</Window>
