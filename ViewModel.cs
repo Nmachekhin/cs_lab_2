@@ -20,6 +20,7 @@ namespace MachekhinZodiak
         public event EventHandler<string> DisplayBirthdayMessage;
         public event EventHandler<string> DisplayZodiakSign;
         public event EventHandler<string> DisplayChineeseZodiakSign;
+        public event EventHandler RevealProperties;
         private DateTime _selectedDate;
 
         public ViewModel()
@@ -64,7 +65,8 @@ namespace MachekhinZodiak
                         ClearAllCalculatedFields.Invoke(this, EventArgs.Empty);
                         ShowIncorrectDateMessage.Invoke(this, EventArgs.Empty);
                     }
-                    break;
+                    else RevealProperties.Invoke(this, EventArgs.Empty);
+                        break;
                 case (nameof(ZodiakCalculator.CurrentZodiakSign)):
                     DisplayZodiakSign.Invoke(this, _datesToZodiakCalculator.CurrentZodiakSign);
                     break;

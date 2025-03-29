@@ -27,8 +27,14 @@ namespace MachekhinZodiak
             _viewModel.DisplayZodiakSign += UpdateZodiakSignTextBlock;
             _viewModel.DisplayChineeseZodiakSign += UpdateChineeseZodiakSignTextBlock;
             _viewModel.ClearAllCalculatedFields += ClearAllCalculatedFieldsEvent;
+            _viewModel.RevealProperties += RevealPropertiesEvent;
         }
         
+
+        private void RevealPropertiesEvent(object sender, EventArgs e)
+        {
+            RevealPropertiesPanel();
+        }
 
         private void FillBirthdayMessageTextBlock(object sender, string message)
         {
@@ -57,6 +63,7 @@ namespace MachekhinZodiak
 
         private void ClearAllCalculatedFieldsEvent(object sender, EventArgs e)
         {
+            HidePropertiesPanel();
             CleanAllCalculatedFields();
         }
         private void CleanAllCalculatedFields()
@@ -65,6 +72,19 @@ namespace MachekhinZodiak
             CongratTextBlock.Text= string.Empty;
             ZodiakSignTextBlock.Text = string.Empty;
             ChineeseZodiakSignTextBlock.Text= string.Empty;
+            EmailTextBlock.Text=string.Empty;
+            NameTextBlock.Text= string.Empty;
+            SurnameTextBlock.Text= string.Empty;
+        }
+
+        private void HidePropertiesPanel()
+        {
+            PropertiesStackPanel.Visibility = Visibility.Collapsed;
+        }
+
+        private void RevealPropertiesPanel()
+        {
+            PropertiesStackPanel.Visibility = Visibility.Visible;
         }
 
         private void IncorrectDateMessagebox()

@@ -5,27 +5,49 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MachekhinZodiak"
         mc:Ignorable="d"
-        Title="Zodiak Calculator" Height="200" Width="300">
+        Title="Zodiak Calculator" Height="300" Width="300">
     <Grid>
+
         <StackPanel Orientation="Vertical">
+            <TextBlock Text="Enter your name:" FontWeight="Bold" />
+            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left"/>
+            <TextBlock Text="Enter your surname:" FontWeight="Bold"/>
+            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left"/>
+            <TextBlock Text="Enter your email:" FontWeight="Bold"/>
+            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left"/>
             <TextBlock Text="Enter your birthday date:" FontWeight="Bold"/>
             <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
                 <DatePicker Width="150" Height="30" SelectedDate="{Binding Date, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Width="55" Height="30" Content="Calculate" Click="ConfirmDateButtonClick"/>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
-                <TextBlock Text="Your age:" FontWeight="Bold" Margin="0,0,4,0"/>
-                <TextBlock x:Name="AgeTextBlock" Text="" Margin="0,0,20,0"/>
-                <TextBlock x:Name="CongratTextBlock" Text=""/>
+            <StackPanel Orientation="Vertical" x:Name="PropertiesStackPanel" Visibility="Collapsed">
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock Text="Your name:" FontWeight="Bold" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="NameTextBlock" Text="" Margin="0,0,20,0"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock Text="Your surname:" FontWeight="Bold" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="SurnameTextBlock" Text="" Margin="0,0,20,0"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock Text="Your email:" FontWeight="Bold" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="EmailTextBlock" Text="" Margin="0,0,20,0"/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock Text="Your age:" FontWeight="Bold" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="AgeTextBlock" Text="" Margin="0,0,20,0"/>
+                    <TextBlock x:Name="CongratTextBlock" Text=""/>
+                </StackPanel>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold" Text="Your Zodiak sign is:" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="ZodiakSignTextBlock" Text="" />
+                </StackPanel>
+                <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
+                    <TextBlock FontWeight="Bold" Text="Your Chineese Zodiak sign is:" Margin="0,0,4,0"/>
+                    <TextBlock x:Name="ChineeseZodiakSignTextBlock" Text="" />
+                </StackPanel>
             </StackPanel>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold" Text="Your Zodiak sign is:" Margin="0,0,4,0"/>
-                <TextBlock x:Name="ZodiakSignTextBlock" Text="" />
-            </StackPanel>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
-                <TextBlock FontWeight="Bold" Text="Your Chineese Zodiak sign is:" Margin="0,0,4,0"/>
-                <TextBlock x:Name="ChineeseZodiakSignTextBlock" Text="" />
-            </StackPanel>
+
         </StackPanel>
 
     </Grid>
