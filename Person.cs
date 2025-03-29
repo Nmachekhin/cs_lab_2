@@ -61,9 +61,25 @@ namespace MachekhinPerson
             get { return _calculator.IsBirthdayToday; }
         }
 
+        public string Email
+        {
+            
+            get { return new string(_email); }
+        }
+
+        public string Name
+        {
+            get { return new string(_name); }
+        }
+
+        public string Surname
+        {
+            get { return new string(_surname); }
+        }
+
         public DateTime BirthDate
         {
-            get { return _calculator.Date; }
+            get { return _birthDate; }
             set { _calculator.Date = value; }
         }
 

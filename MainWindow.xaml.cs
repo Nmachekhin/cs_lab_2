@@ -33,8 +33,26 @@ namespace MachekhinZodiak
             _viewModel.DatePickerUpdate += DatePickerUpdateEventHandler;
             _viewModel.DisplayAdultText += FillAdultTextBlock;
             _viewModel.UpdateProceedButtonStatus += ButtonStatusEventHandler;
+            _viewModel.DisplayNameText += FillNameTextBlock;
+            _viewModel.DisplaySurnameText += FillSurnameTextBlock;
+            _viewModel.DisplayEmailText += FillEmailTextBlock;
         }
-        
+
+        private void FillNameTextBlock(object sender, string message)
+        {
+            NameTextBlock.Text = message;
+        }
+
+        private void FillSurnameTextBlock(object sender, string message)
+        {
+            SurnameTextBlock.Text = message;
+        }
+
+        private void FillEmailTextBlock(object sender, string message)
+        {
+            EmailTextBlock.Text = message;
+        }
+
 
         private void ButtonStatusEventHandler(object sender, bool active)
         {
@@ -123,7 +141,7 @@ namespace MachekhinZodiak
 
         private void ConfirmDateButtonClick(object sender, RoutedEventArgs e)
         {
-            _viewModel.ProseedButtonClick(NameTextBlock.Text, SurnameTextBlock.Text, EmailTextBlock.Text, Convert.ToDateTime(BirthdayDatePicker.SelectedDate));
+            _viewModel.ProseedButtonClick(NameInputBox.Text, SurnameInputBox.Text, EmailInputBox.Text, Convert.ToDateTime(BirthdayDatePicker.SelectedDate));
         }
 
         private void InputsTextChanged(object sender, EventArgs e)

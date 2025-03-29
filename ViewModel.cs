@@ -22,6 +22,9 @@ namespace MachekhinZodiak
         public event EventHandler<string> DisplayZodiakSign;
         public event EventHandler<string> DisplayChineeseZodiakSign;
         public event EventHandler<string> DisplayAdultText;
+        public event EventHandler<string> DisplayNameText;
+        public event EventHandler<string> DisplaySurnameText;
+        public event EventHandler<string> DisplayEmailText;
         public event EventHandler RevealProperties;
         public event EventHandler<DateTime> DatePickerUpdate;
         public event EventHandler<bool> UpdateProceedButtonStatus;
@@ -55,12 +58,20 @@ namespace MachekhinZodiak
                 case (nameof(Person.BirthDate)):
                     Date = _person.BirthDate;
                     break;
+                case (nameof(Person.Email)):
+                    DisplayEmailText.Invoke(this, _person.Email);
+                    break;
+                case (nameof(Person.Name)):
+                    DisplayNameText.Invoke(this, _person.Name);
+                    break;
+                case (nameof(Person.Surname)):
+                    DisplaySurnameText.Invoke(this, _person.Surname);
+                    break;
                 case (nameof(Person.IsBirthday)):
                     if (_person.IsBirthday) DisplayBirthdayMessage.Invoke(this, "🎉🎉🎉Happy birthday!🎉🎉🎉");
                     else DisplayBirthdayMessage.Invoke(this, String.Empty);
                     break;
                 case (nameof(Person.Age)):
-                    Trace.WriteLine("__________________________");
                     AgeUpdate.Invoke(this, _person.Age);
                     if (_person.IsAdult)
                     {
@@ -79,6 +90,9 @@ namespace MachekhinZodiak
                     }
                     else
                     {
+                        DisplayEmailText.Invoke(this, _person.Email);
+                        DisplayNameText.Invoke(this, _person.Name);
+                        DisplaySurnameText.Invoke(this, _person.Surname);
                         RevealProperties.Invoke(this, EventArgs.Empty);
                         _selectedDate = _person.BirthDate;
                     }
