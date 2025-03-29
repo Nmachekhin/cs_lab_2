@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -21,6 +22,7 @@ namespace MachekhinZodiak
             InitializeComponent();
             _viewModel = new ViewModel();
             DataContext = _viewModel;
+            SetDatePicker(_viewModel.Date);
             _viewModel.ShowIncorrectDateMessage += IncorrectDateEvent;
             _viewModel.AgeUpdate += UpdateAgeTextBlock;
             _viewModel.DisplayBirthdayMessage += FillBirthdayMessageTextBlock;
@@ -28,8 +30,27 @@ namespace MachekhinZodiak
             _viewModel.DisplayChineeseZodiakSign += UpdateChineeseZodiakSignTextBlock;
             _viewModel.ClearAllCalculatedFields += ClearAllCalculatedFieldsEvent;
             _viewModel.RevealProperties += RevealPropertiesEvent;
+            _viewModel.DatePickerUpdate += DatePickerUpdateEventHandler;
+            _viewModel.DisplayAdultText += FillAdultTextBlock;
+            _viewModel.UpdateProceedButtonStatus += ButtonStatusEventHandler;
         }
         
+
+        private void ButtonStatusEventHandler(object sender, bool active)
+        {
+            ProceedButton.IsEnabled = active;
+        }
+
+
+        private void DatePickerUpdateEventHandler(object sender, DateTime date)
+        {
+            BirthdayDatePicker.SelectedDate = date;
+        }
+
+        private void SetDatePicker(DateTime date)
+        {
+            BirthdayDatePicker.SelectedDate = date;
+        }
 
         private void RevealPropertiesEvent(object sender, EventArgs e)
         {
@@ -39,6 +60,11 @@ namespace MachekhinZodiak
         private void FillBirthdayMessageTextBlock(object sender, string message)
         {
             CongratTextBlock.Text = message;
+        }
+
+        private void FillAdultTextBlock(object sender, string message)
+        {
+            AdultTextBlock.Text = message;
         }
 
         private void UpdateAgeTextBlock(object sender, int age)
@@ -75,6 +101,7 @@ namespace MachekhinZodiak
             EmailTextBlock.Text=string.Empty;
             NameTextBlock.Text= string.Empty;
             SurnameTextBlock.Text= string.Empty;
+            AgeTextBlock.Text = string.Empty;
         }
 
         private void HidePropertiesPanel()
@@ -96,7 +123,12 @@ namespace MachekhinZodiak
 
         private void ConfirmDateButtonClick(object sender, RoutedEventArgs e)
         {
-            _viewModel.ConfirmDateButtonClick(sender, e);
+            _viewModel.ProseedButtonClick(NameTextBlock.Text, SurnameTextBlock.Text, EmailTextBlock.Text, Convert.ToDateTime(BirthdayDatePicker.SelectedDate));
+        }
+
+        private void InputsTextChanged(object sender, EventArgs e)
+        {
+            _viewModel.CheckInputsStatus(NameInputBox.Text, SurnameInputBox.Text, EmailInputBox.Text, BirthdayDatePicker.Text, ProceedButton.IsEnabled);
         }
 
     }

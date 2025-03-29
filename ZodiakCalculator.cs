@@ -39,6 +39,11 @@ namespace MachekhinZodiak
             Date = DateTime.Today;
         }
 
+        public ZodiakCalculator(DateTime date)
+        {
+            Date = date;
+        }
+
         public int Age
         {
             get => _age;

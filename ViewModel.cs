@@ -1,33 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using MachekhinPerson;
 
 namespace MachekhinZodiak
 {
-    internal class ViewModel : INotifyPropertyChanged
+    internal class ViewModel
     {
-        private ZodiakCalculator _datesToZodiakCalculator;
-        public event PropertyChangedEventHandler PropertyChanged;
+        private Person _person;
         public event EventHandler ShowIncorrectDateMessage;
         public event EventHandler ClearAllCalculatedFields;
         public event EventHandler<int> AgeUpdate;
         public event EventHandler<string> DisplayBirthdayMessage;
         public event EventHandler<string> DisplayZodiakSign;
         public event EventHandler<string> DisplayChineeseZodiakSign;
+        public event EventHandler<string> DisplayAdultText;
         public event EventHandler RevealProperties;
+        public event EventHandler<DateTime> DatePickerUpdate;
+        public event EventHandler<bool> UpdateProceedButtonStatus;
         private DateTime _selectedDate;
 
         public ViewModel()
-        { 
-            _datesToZodiakCalculator = new ZodiakCalculator();
-            _datesToZodiakCalculator.PropertyChanged += OnModelPropertyChanged;
-            Date = _datesToZodiakCalculator.Date;
+        {
+            _selectedDate = DateTime.Today;
         }
 
 
@@ -39,51 +41,81 @@ namespace MachekhinZodiak
 
         public bool IsDateValid
         {
-            get { return _datesToZodiakCalculator.IsDateValid; }
+            get { if (_person == null) return false; else return _person.IsValid; }
         }
 
 
 
         private void OnModelPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            
             switch (e.PropertyName)
             {
-                case (nameof(ZodiakCalculator.Date)):
-                    Date = _datesToZodiakCalculator.Date;
-                    OnPropertyChanged(nameof(Date));
+
+                case (nameof(Person.BirthDate)):
+                    Date = _person.BirthDate;
                     break;
-                case (nameof(ZodiakCalculator.IsBirthdayToday)):
-                    if (_datesToZodiakCalculator.IsBirthdayToday) DisplayBirthdayMessage.Invoke(this, "🎉🎉🎉Happy birthday!🎉🎉🎉");
+                case (nameof(Person.IsBirthday)):
+                    if (_person.IsBirthday) DisplayBirthdayMessage.Invoke(this, "🎉🎉🎉Happy birthday!🎉🎉🎉");
                     else DisplayBirthdayMessage.Invoke(this, String.Empty);
                     break;
-                case (nameof(ZodiakCalculator.Age)):
-                    AgeUpdate.Invoke(this, _datesToZodiakCalculator.Age);
+                case (nameof(Person.Age)):
+                    Trace.WriteLine("__________________________");
+                    AgeUpdate.Invoke(this, _person.Age);
+                    if (_person.IsAdult)
+                    {
+                        DisplayAdultText.Invoke(this, "Adult");
+                    }
+                    else DisplayAdultText.Invoke(this, "Not adult yet");
                     break;
-                case (nameof(ZodiakCalculator.IsDateValid)):
-                    if (!IsDateValid)
+                case (nameof(Person.IsValid)):
+
+                    if (!_person.IsValid)
                     {
                         ClearAllCalculatedFields.Invoke(this, EventArgs.Empty);
                         ShowIncorrectDateMessage.Invoke(this, EventArgs.Empty);
+                        DatePickerUpdate.Invoke(this, _selectedDate);
+                        DismissPerson();
                     }
-                    else RevealProperties.Invoke(this, EventArgs.Empty);
-                        break;
-                case (nameof(ZodiakCalculator.CurrentZodiakSign)):
-                    DisplayZodiakSign.Invoke(this, _datesToZodiakCalculator.CurrentZodiakSign);
+                    else
+                    {
+                        RevealProperties.Invoke(this, EventArgs.Empty);
+                        _selectedDate = _person.BirthDate;
+                    }
                     break;
-                case (nameof(ZodiakCalculator.CurrentChineeseZodiakSign)):
-                    DisplayChineeseZodiakSign.Invoke(this, _datesToZodiakCalculator.CurrentChineeseZodiakSign);
+                case (nameof(Person.SunSign)):
+                    DisplayZodiakSign.Invoke(this, _person.SunSign);
+                    break;
+                case (nameof(Person.ChineeseSign)):
+                    DisplayChineeseZodiakSign.Invoke(this, _person.ChineeseSign);
                     break;
             }
         }
 
-        public void ConfirmDateButtonClick(object sender, RoutedEventArgs e)
+
+        private void DismissPerson()
         {
-            _datesToZodiakCalculator.Date = Date;
+            if (_person!=null)_person.PropertyChanged -= OnModelPropertyChanged;
+            _person = null;
         }
 
-        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        public void ProseedButtonClick(string name, string surname, string email, DateTime birthDate)
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            DismissPerson();
+            _person=new Person(name, surname, email);
+            _person.PropertyChanged += OnModelPropertyChanged;
+            _person.BirthDate = birthDate;
+        }
+
+
+        public void CheckInputsStatus(string name, string surname, string email, string date, bool btnStatus)
+        {
+            Trace.WriteLine(btnStatus);
+            if (!name.Equals("") && !surname.Equals("") && !email.Equals("") && !date.Equals(""))
+            {
+                if (!btnStatus) UpdateProceedButtonStatus.Invoke(this, true);
+            }
+            else if (btnStatus) UpdateProceedButtonStatus.Invoke(this, false);
         }
     }
 }
