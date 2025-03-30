@@ -16,7 +16,7 @@ namespace MachekhinZodiak
         private int _age;
         private bool _dateValid = false;
         private bool _isBirthdayToday = false;
-        private ZodiakSign _currentSign=null;
+        private ZodiakSign _currentSign = null;
         private string _chineeseCurrentSign = string.Empty;
         private static ZodiakSign[] s_zodiakSignsTimespan = {
             new ZodiakSign(new DateTime(4, 3, 21), new DateTime(4, 4, 19), "Aries"),
@@ -33,48 +33,69 @@ namespace MachekhinZodiak
             new ZodiakSign(new DateTime(4, 2, 19), new DateTime(4, 3, 20), "Pisces")
         };
 
+        private static readonly object s_AgeLocker = new object();
+        private static readonly object s_DateLocker = new object();
+        private static readonly object s_ValidDataLocker = new object();
+        private static readonly object s_BirthdayLocker = new object();
+        private static readonly object s_ZodiakLocker = new object();
+        private static readonly object s_ChineeseZodiakLocker = new object();
+
 
         public ZodiakCalculator()
         {
-            Date = DateTime.Today;
+            _date = DateTime.Today;
         }
 
         public ZodiakCalculator(DateTime date)
         {
-            Date = date;
+            _date = date;
         }
 
         public int Age
         {
-            get => _age;
+            get { 
+                lock(s_AgeLocker)
+                {
+                    return _age;
+                }
+            }
+            
         }
 
-        private void CalculateAge()
+        public async Task CalculateAge()
         {
-            DateTime today = DateTime.Today;
-            _age = (DateTime.Today.Year - Date.Year);
-            if (DateTime.Today.Month < Date.Month) _age--;
-            if (DateTime.Today.Month == Date.Month && DateTime.Today.Day > Date.Day && _age>0) _age--;
+            lock (s_AgeLocker)
+            {
+                DateTime today = DateTime.Today;
+                _age = (DateTime.Today.Year - Date.Year);
+                if (today.Month < Date.Month || (today.Month == Date.Month && today.Day < Date.Day))
+                {
+                    _age--;
+                }
+            }
             OnPropertyChanged(nameof(Age));
         }
 
         public bool IsBirthdayToday
         {
-            get { return _isBirthdayToday; }
+            get { lock (s_BirthdayLocker) return _isBirthdayToday; }
         }
 
         public bool IsDateValid
         {
-            get => _dateValid;
+            get { lock (s_ValidDataLocker) return _dateValid; }
         }
 
         public string CurrentZodiakSign
         {
             get
             {
-                if (_currentSign == null)
-                    return "";
-                return _currentSign.SignName;
+                lock (s_ZodiakLocker)
+                {
+                    if (_currentSign == null)
+                        return "";
+                    return _currentSign.SignName;
+                }
             }
         }
 
@@ -82,59 +103,72 @@ namespace MachekhinZodiak
         {
             get
             {
-                string signCopy = new String(_chineeseCurrentSign);
-                return signCopy;
+                lock(s_ChineeseZodiakLocker)
+                {
+                    string signCopy = new String(_chineeseCurrentSign);
+                    return signCopy;
+                }
             }
         }
 
-        private void CalculateZodiakSign()
+        private async Task CalculateZodiakSign()
         {
             DateTime yearlessDate;
-            if (_date.Month==1 && _date.Day<=19) yearlessDate = new DateTime(5, _date.Month, _date.Day);
+            if (_date.Month == 1 && _date.Day <= 19) yearlessDate = new DateTime(5, _date.Month, _date.Day);
             else yearlessDate = new DateTime(4, _date.Month, _date.Day);
-            for(int i =0; i<12; i++)
+            for (int i = 0; i < 12; i++)
             {
-                if (s_zodiakSignsTimespan[i].CheckBirthDate(yearlessDate))
-                    _currentSign = s_zodiakSignsTimespan[i];
+                if (await s_zodiakSignsTimespan[i].CheckBirthDate(yearlessDate))
+                    lock (s_ZodiakLocker) { _currentSign = s_zodiakSignsTimespan[i]; }
             }
             OnPropertyChanged(nameof(CurrentZodiakSign));
         }
 
-        private void CalculateChineeseZodiakSign()
+        private async Task CalculateChineeseZodiakSign()
         {
-            _chineeseCurrentSign = ChineeseZodiakSign.GetSign(_date);
+            string newString = await ChineeseZodiakSign.GetSign(_date);
+            lock (s_ChineeseZodiakLocker)
+            {
+                _chineeseCurrentSign = newString;
+            }
+            
             OnPropertyChanged(nameof(CurrentChineeseZodiakSign));
         }
 
         public DateTime Date
         {
-            get { return _date; }
-            set 
-            {
-                if (DateValidator(value))
-                {
-                    _date = value;
-                    _dateValid = true;
-                    _isBirthdayToday = _date.Day == DateTime.Today.Day && _date.Month == DateTime.Today.Month;
-                    CalculateAge();
-                    CalculateZodiakSign();
-                    CalculateChineeseZodiakSign();
-                }
-                else
-                {
-                    _date = DateTime.Today;
-                    _dateValid = false;
-                    _isBirthdayToday = false;
-                    _age = 0;
-                    _currentSign = null;
-                    _chineeseCurrentSign = "";
-                }
-                OnPropertyChanged(nameof(IsDateValid));
-                OnPropertyChanged(nameof(IsBirthdayToday));
-                OnPropertyChanged(nameof(Date));
-                
+            get { lock (s_DateLocker) { return _date; } }
+        }
 
+        private async Task<bool> CheckoutBirthday()
+        {
+            return _date.Day == DateTime.Today.Day && _date.Month == DateTime.Today.Month;
+        }
+
+        public async Task UpdateFields(DateTime value)
+        {
+            if (DateValidator(value))
+            {
+                lock (s_DateLocker) { _date = value; }
+                lock(s_ValidDataLocker) _dateValid = true;
+                await CalculateAge();
+                await CalculateZodiakSign();
+                await CalculateChineeseZodiakSign();
+                bool birthdayState= await CheckoutBirthday();
+                lock(s_BirthdayLocker) {_isBirthdayToday = birthdayState; }
             }
+            else
+            {
+                lock (s_DateLocker) { _date = DateTime.Today; }
+                lock (s_ValidDataLocker) _dateValid = false;
+                lock (s_BirthdayLocker) { _isBirthdayToday = false; }
+                lock (s_AgeLocker) { _age = 0;}
+                lock (s_ZodiakLocker) { _currentSign = null; }
+                lock (s_ChineeseZodiakLocker) { _chineeseCurrentSign = ""; }
+            }
+            OnPropertyChanged(nameof(IsDateValid));
+            OnPropertyChanged(nameof(IsBirthdayToday));
+            OnPropertyChanged(nameof(Date));
         }
 
 

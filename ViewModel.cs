@@ -28,6 +28,7 @@ namespace MachekhinZodiak
         public event EventHandler RevealProperties;
         public event EventHandler<DateTime> DatePickerUpdate;
         public event EventHandler<bool> UpdateProceedButtonStatus;
+        public event EventHandler<bool> UpdateInputsPanelStatus;
         private DateTime _selectedDate;
 
         public ViewModel()
@@ -113,19 +114,21 @@ namespace MachekhinZodiak
             _person = null;
         }
 
-        public void ProseedButtonClick(string name, string surname, string email, DateTime birthDate)
+        public async void ProseedButtonClick(string name, string surname, string email, DateTime birthDate)
         {
+            UpdateInputsPanelStatus.Invoke(this, false);
+            ClearAllCalculatedFields.Invoke(this, EventArgs.Empty);
             DismissPerson();
             _person=new Person(name, surname, email);
             _person.PropertyChanged += OnModelPropertyChanged;
-            _person.BirthDate = birthDate;
+            await _person.UpdateDate(birthDate);
+            UpdateInputsPanelStatus.Invoke(this, true);
         }
 
 
         public void CheckInputsStatus(string name, string surname, string email, string date, bool btnStatus)
         {
-            Trace.WriteLine(btnStatus);
-            if (!name.Equals("") && !surname.Equals("") && !email.Equals("") && !date.Equals(""))
+            if (!string.IsNullOrWhiteSpace(name) && !string.IsNullOrWhiteSpace(surname) && !string.IsNullOrWhiteSpace(email) && !string.IsNullOrWhiteSpace(date))
             {
                 if (!btnStatus) UpdateProceedButtonStatus.Invoke(this, true);
             }

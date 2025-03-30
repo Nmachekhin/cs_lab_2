@@ -33,9 +33,10 @@ namespace MachekhinZodiak
         };
 
 
-        public static string GetSign(DateTime birthday)
+        public static async Task<string> GetSign(DateTime birthday)
         {
             int birthdayYear = birthday.Year;
+            await Task.Delay(2000);
             string resString = new String(s_elements[((birthdayYear%10)/2)%5]);
             resString += " "+ new String(s_Signs[birthdayYear % 12]);
             return resString;

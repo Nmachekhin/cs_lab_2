@@ -24,7 +24,7 @@ namespace MachekhinZodiak
             get { string signStringCopy = new String(_sign); return signStringCopy; }
         }
 
-        public bool CheckBirthDate(DateTime birthday)
+        public async Task<bool> CheckBirthDate(DateTime birthday)
         {
             return birthday <= _endDate && birthday >= _beginDate;
         }

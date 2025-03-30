@@ -27,14 +27,13 @@ namespace MachekhinPerson
             _birthDate = birthDate;
             _calculator = new ZodiakCalculator();
             _calculator.PropertyChanged += OnZodiakCalculateorPropertyChange;
-            _calculator.Date=birthDate;
         }
 
         public Person(string name, string surname, string email) : this(name, surname, email, DateTime.Today) { }
 
         public Person(string name, string surname, DateTime birthDate) : this(name, surname, string.Empty, birthDate) { }
 
-        ~Person() { Trace.WriteLine("person is destroyed 1984 ___________________"); }
+        ~Person() { _calculator = null; }
 
         public int Age
         {
@@ -80,7 +79,12 @@ namespace MachekhinPerson
         public DateTime BirthDate
         {
             get { return _birthDate; }
-            set { _calculator.Date = value; }
+        }
+
+
+        public async Task UpdateDate(DateTime date)
+        {
+            await _calculator.UpdateFields(date);
         }
 
         public bool IsValid

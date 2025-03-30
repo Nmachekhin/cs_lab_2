@@ -9,23 +9,26 @@
     <Grid>
 
         <StackPanel Orientation="Vertical">
-            <TextBlock Text="Enter your name:" FontWeight="Bold" />
-            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="NameInputBox"/>
-            <TextBlock Text="Enter your surname:" FontWeight="Bold"/>
-            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="SurnameInputBox"/>
-            <TextBlock Text="Enter your email:" FontWeight="Bold"/>
-            <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="EmailInputBox"/>
-            <TextBlock Text="Enter your birthday date:" FontWeight="Bold"/>
-            <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
-                <DatePicker Width="150" Height="30" x:Name="BirthdayDatePicker">
-                    <DatePicker.Resources>
-                        <Style TargetType="DatePickerTextBox">
-                            <EventSetter Event="TextChanged" Handler="InputsTextChanged"/>
-                        </Style>
-                    </DatePicker.Resources>
-                </DatePicker>
-                <Button Width="55" Height="30" Content="Proceed" Click="ConfirmDateButtonClick" IsEnabled="False" x:Name="ProceedButton"/>
+            <StackPanel Orientation="Vertical" x:Name="AllInputsPanel" IsEnabled="True">
+                <TextBlock Text="Enter your name:" FontWeight="Bold" />
+                <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="NameInputBox"/>
+                <TextBlock Text="Enter your surname:" FontWeight="Bold"/>
+                <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="SurnameInputBox"/>
+                <TextBlock Text="Enter your email:" FontWeight="Bold"/>
+                <TextBox Width="250" MaxLength="30"  HorizontalAlignment="Left" TextChanged="InputsTextChanged" x:Name="EmailInputBox"/>
+                <TextBlock Text="Enter your birthday date:" FontWeight="Bold"/>
+                <StackPanel HorizontalAlignment="Left" VerticalAlignment="Top" Orientation="Horizontal">
+                    <DatePicker Width="150" Height="30" x:Name="BirthdayDatePicker">
+                        <DatePicker.Resources>
+                            <Style TargetType="DatePickerTextBox">
+                                <EventSetter Event="TextChanged" Handler="InputsTextChanged"/>
+                            </Style>
+                        </DatePicker.Resources>
+                    </DatePicker>
+                    <Button Width="55" Height="30" Content="Proceed" Click="ConfirmDateButtonClick" IsEnabled="False" x:Name="ProceedButton"/>
+                </StackPanel>
             </StackPanel>
+
             <StackPanel Orientation="Vertical" x:Name="PropertiesStackPanel" Visibility="Collapsed">
                 <StackPanel VerticalAlignment="Top" Orientation="Horizontal">
                     <TextBlock Text="Your name:" FontWeight="Bold" Margin="0,0,4,0"/>

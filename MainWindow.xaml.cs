@@ -36,6 +36,13 @@ namespace MachekhinZodiak
             _viewModel.DisplayNameText += FillNameTextBlock;
             _viewModel.DisplaySurnameText += FillSurnameTextBlock;
             _viewModel.DisplayEmailText += FillEmailTextBlock;
+            _viewModel.UpdateInputsPanelStatus += InputPanelStatusEventHandler;
+        }
+
+
+        private void InputPanelStatusEventHandler(object sender, bool active)
+        {
+            AllInputsPanel.IsEnabled = active;
         }
 
         private void FillNameTextBlock(object sender, string message)
