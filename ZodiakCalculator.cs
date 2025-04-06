@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using System.Windows.Controls;
+using MachekhinPerson;
 
 namespace MachekhinZodiak
 {
@@ -147,35 +148,47 @@ namespace MachekhinZodiak
 
         public async Task UpdateFields(DateTime value)
         {
-            if (DateValidator(value))
+            bool succesfull_check = false;
+            try
             {
-                lock (s_DateLocker) { _date = value; }
-                lock(s_ValidDataLocker) _dateValid = true;
-                await CalculateAge();
-                await CalculateZodiakSign();
-                await CalculateChineeseZodiakSign();
-                bool birthdayState= await CheckoutBirthday();
-                lock(s_BirthdayLocker) {_isBirthdayToday = birthdayState; }
-            }
-            else
+                succesfull_check=s_DateValidator(value);
+                if (!succesfull_check)
+                {
+                    lock (s_DateLocker) { _date = DateTime.Today; }
+                    lock (s_ValidDataLocker) _dateValid = false;
+                    lock (s_BirthdayLocker) { _isBirthdayToday = false; }
+                    lock (s_AgeLocker) { _age = 0; }
+                    lock (s_ZodiakLocker) { _currentSign = null; }
+                    lock (s_ChineeseZodiakLocker) { _chineeseCurrentSign = ""; }
+                    throw new Exception("Unknown birth date exception!");
+                }
+            }catch (BirthDateInFutureException e) { }
+            catch (BirthDateTooFarInPastException e) { }
+            finally
             {
-                lock (s_DateLocker) { _date = DateTime.Today; }
-                lock (s_ValidDataLocker) _dateValid = false;
-                lock (s_BirthdayLocker) { _isBirthdayToday = false; }
-                lock (s_AgeLocker) { _age = 0;}
-                lock (s_ZodiakLocker) { _currentSign = null; }
-                lock (s_ChineeseZodiakLocker) { _chineeseCurrentSign = ""; }
+                if(succesfull_check)
+                {
+                    lock (s_DateLocker) { _date = value; }
+                    lock (s_ValidDataLocker) _dateValid = true;
+                    await CalculateAge();
+                    await CalculateZodiakSign();
+                    await CalculateChineeseZodiakSign();
+                    bool birthdayState = await CheckoutBirthday();
+                    lock (s_BirthdayLocker) { _isBirthdayToday = birthdayState; }
+                }
+                OnPropertyChanged(nameof(IsDateValid));
+                OnPropertyChanged(nameof(IsBirthdayToday));
+                OnPropertyChanged(nameof(Date));
             }
-            OnPropertyChanged(nameof(IsDateValid));
-            OnPropertyChanged(nameof(IsBirthdayToday));
-            OnPropertyChanged(nameof(Date));
         }
 
 
-        private bool DateValidator(DateTime date)
+        public static bool s_DateValidator(DateTime date)
         {
             DateTime today = DateTime.Today;
-            return today >= date && (today.Year - date.Year) <= 135;
+            if (today < date) throw new BirthDateInFutureException("Birth date cannot be in the future!");
+            if ((today.Year - date.Year) > 135) throw new BirthDateTooFarInPastException("Birth date is over 135 years in the past!");
+            return true;
         }
 
 

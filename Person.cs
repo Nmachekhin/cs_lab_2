@@ -7,11 +7,13 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using MachekhinZodiak;
+using System.Text.RegularExpressions;
 
 namespace MachekhinPerson
 {
     internal class Person : INotifyPropertyChanged
     {
+        private static string s_emailRegExpr = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
         private string _name;
         private string _surname;
         private string _email;
@@ -19,13 +21,36 @@ namespace MachekhinPerson
 
         private ZodiakCalculator _calculator;
 
+
+        private bool EmailValidator(string email)
+        {
+            Regex validator = new Regex(s_emailRegExpr);
+            if (!validator.IsMatch(email))
+            {
+                return false;
+            }
+            return true;
+        }
+
+
+        private bool DateValidator(DateTime birthDate)
+        {
+            return ZodiakCalculator.s_DateValidator(birthDate);
+        }
+
+
         public Person(string name, string surname, string email, DateTime birthDate) 
         {
+           
             _name = new string(name);
             _surname = new string(surname);
-            _email = new string(email);
-            _birthDate = birthDate;
-            _calculator = new ZodiakCalculator();
+            if (EmailValidator(email))
+                _email = new string(email);
+            else throw new InvalidEmailFormattingException("Email does not match the pattern!");
+            if (DateValidator(birthDate))
+                _birthDate = birthDate;
+            else throw new Exception("Unknown date error!");
+                _calculator = new ZodiakCalculator();
             _calculator.PropertyChanged += OnZodiakCalculateorPropertyChange;
         }
 

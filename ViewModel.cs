@@ -15,7 +15,7 @@ namespace MachekhinZodiak
     internal class ViewModel
     {
         private Person _person;
-        public event EventHandler ShowIncorrectDateMessage;
+        public event EventHandler<string> ShowErrorMessage;
         public event EventHandler ClearAllCalculatedFields;
         public event EventHandler<int> AgeUpdate;
         public event EventHandler<string> DisplayBirthdayMessage;
@@ -85,7 +85,7 @@ namespace MachekhinZodiak
                     if (!_person.IsValid)
                     {
                         ClearAllCalculatedFields.Invoke(this, EventArgs.Empty);
-                        ShowIncorrectDateMessage.Invoke(this, EventArgs.Empty);
+                        ShowErrorMessage.Invoke(this, "Incorrect birth date!");
                         DatePickerUpdate.Invoke(this, _selectedDate);
                         DismissPerson();
                     }
@@ -119,10 +119,35 @@ namespace MachekhinZodiak
             UpdateInputsPanelStatus.Invoke(this, false);
             ClearAllCalculatedFields.Invoke(this, EventArgs.Empty);
             DismissPerson();
-            _person=new Person(name, surname, email);
-            _person.PropertyChanged += OnModelPropertyChanged;
-            await _person.UpdateDate(birthDate);
-            UpdateInputsPanelStatus.Invoke(this, true);
+            bool success = false;
+            try
+            {
+                _person = new Person(name, surname, email);
+                _person.PropertyChanged += OnModelPropertyChanged;
+                await _person.UpdateDate(birthDate);
+                UpdateInputsPanelStatus.Invoke(this, true);
+                success = true;
+            }
+            catch (InvalidEmailFormattingException e)
+            {
+                ShowErrorMessage.Invoke(this, e.Message);
+            }
+            catch (BirthDateInFutureException e)
+            {
+                ShowErrorMessage.Invoke(this, e.Message);
+            }catch (BirthDateTooFarInPastException e)
+            {
+                ShowErrorMessage.Invoke(this, e.Message);
+            }
+            catch (Exception e)
+            {
+                ShowErrorMessage.Invoke(this, e.Message);
+            }
+            if(!success)
+            {
+                DismissPerson();
+                UpdateInputsPanelStatus.Invoke(this, true);
+            }
         }
 
 

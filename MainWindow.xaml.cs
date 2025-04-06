@@ -23,7 +23,7 @@ namespace MachekhinZodiak
             _viewModel = new ViewModel();
             DataContext = _viewModel;
             SetDatePicker(_viewModel.Date);
-            _viewModel.ShowIncorrectDateMessage += IncorrectDateEvent;
+            _viewModel.ShowErrorMessage += ErrorMessagebox;
             _viewModel.AgeUpdate += UpdateAgeTextBlock;
             _viewModel.DisplayBirthdayMessage += FillBirthdayMessageTextBlock;
             _viewModel.DisplayZodiakSign += UpdateZodiakSignTextBlock;
@@ -107,9 +107,10 @@ namespace MachekhinZodiak
             ChineeseZodiakSignTextBlock.Text = sign;
         }
 
-        private void IncorrectDateEvent(object sender, EventArgs e)
+        private void ErrorMessagebox(object sender, string message)
         {
-            IncorrectDateMessagebox();
+            MessageBox.Show(message, "Error has occured!",
+                MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void ClearAllCalculatedFieldsEvent(object sender, EventArgs e)
@@ -138,13 +139,6 @@ namespace MachekhinZodiak
         {
             PropertiesStackPanel.Visibility = Visibility.Visible;
         }
-
-        private void IncorrectDateMessagebox()
-        {
-            MessageBox.Show("Entered birth date is incorrect!", "Birth date error!",
-            MessageBoxButton.OK, MessageBoxImage.Error);
-        }
-
 
         private void ConfirmDateButtonClick(object sender, RoutedEventArgs e)
         {
